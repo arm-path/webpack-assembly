@@ -1,0 +1,14 @@
+{
+    "presets": [
+        "@babel/preset-react", // REACT
+        "@babel/preset-typescript", // TypeScript
+        [
+            "@babel/env", // Первоначальная настройка babelrc
+            {
+                "targets": [
+                    "last 5 versions" // Потдержка последних 5 версий браузера
+                ]
+            }
+        ]
+    ]
+}

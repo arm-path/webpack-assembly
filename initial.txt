@@ -1,0 +1,145 @@
+<------->npm install --save-dev webpack | Устанавливаем webpack
+<------->npm install --save-dev webpack-cli | Устанавливаем зависимость для webpack, версии выше 4.0
+
+
+# HTML: =================================================================================================
+    <------->npm install --save-dev html-webpack-plugin | Устанавливаем plugin для работы с html
+
+    Добавляем в webpack.config.js:
+    ->    const HtmlWebpackPlugin = require('html-webpack-plugin')
+        
+        Добавляем в: module.export
+            Добавляем в:  plugins: [    ]
+            ->    new HtmlWebpackPlugin({})
+
+
+# CSS:  =================================================================================================
+    <------->npm install --save-dev css-loader | Устанавливаем plugin для работы с css
+    <------->npm install --save-dev style-loader | Плагин для расположения CSS в теге head, без вывода в отдельный файл
+    <------->npm install --save-dev mini-css-extract-plugin | Плагин для получения отдельного файла CSS
+
+        Добавляем в webpack.config.js:
+        ->    const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+            Добавляем в: module.export 
+                Добавляем в: module:{rules:[    ]}
+                ->    {test: /\.css$/i, use: [MiniCssExtractPlugin.loader, 'css-loader'], } 
+                Добавляем в:  plugins: [    ]
+                ->    new MiniCssExtractPlugin({}) 
+
+    # Оптимизацие CSS файла: 
+    <------->npm install --save-dev optimize-css-assets-webpack-plugin | Для CSS Оптимизация
+    <------->npm install uglifyjs-webpack-plugin --save-dev | Для JS - Оптимизация
+
+        Добавляем в webpack.config.js:
+        ->    const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+        ->    const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+            Добавляем в: optimization: { minimizer: [   ],}
+                ->    new OptimizeCSSAssetsPlugin({}),
+                ->    new UglifyJsPlugin({}) 
+                    | При сборке может возникать ошибка, так как данный плагин не потдерживает ES-6
+                    | Для корректной работый требуется babel
+
+    НЕ ЗАБЫВАЕМ ИМПОРТИРОВАТЬ ФАЙЛ С РАСШИРЕНИЕМ LESS В ФАЙЛЕ INDEX.JS
+
+# babel:  =================================================================================================
+    <------->npm install --save-dev @babel/core @babel/cli @babel/preset-env
+    <------->npm install --save @babel/polyfill
+    <------->npm install --save-dev babel-loader
+
+    Добавляем в webpack.config.js:
+                Добавляем в: module.export 
+                    Добавляем в: module:{rules:[    ]}
+                    ->    { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
+
+    Добавляем в .babelrc:
+        ->{ "presets": [ ["@babel/env", { "targets": [ "last 5 versions"]}]]}
+
+
+# JQuery: =================================================================================================
+    <------->npm i jquery
+
+
+# less: =================================================================================================
+    <------->npm install less-loader --save-dev
+
+    Добавляем в webpack.config.js:
+            Добавляем в: module.export 
+                Добавляем в: module:{rules:[    ]}
+                ->    { test: /\.less$/i, use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'], },
+
+    НЕ ЗАБЫВАЕМ ИМПОРТИРОВАТЬ ФАЙЛ С РАСШИРЕНИЕМ LESS В ФАЙЛЕ INDEX.JS
+
+# scss or sass: =================================================================================================
+    <------->npm install sass-loader sass webpack --save-dev
+        Добавляем в webpack.config.js:
+                    Добавляем в: module.export 
+                        Добавляем в: module:{rules:[    ]}
+                        ->    { test: /\.scss$/i, use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'], },
+    НЕ ЗАБЫВАЕМ ИМПОРТИРОВАТЬ ФАЙЛ С РАСШИРЕНИЕМ SCSS В ФАЙЛЕ INDEX.JS
+
+
+# reactJS: =================================================================================================
+    <------->npm install -S react react-dom
+    <------->npm install --save-dev @babel/preset-react
+    Добавляем в .babelrc:
+            Добавляем в { "presets": [  ]}:
+            ->    "@babel/preset-react"
+
+# typeScript: =================================================================================================
+    <------->npm install --save-dev @babel/preset-typescript
+    Добавляем в .babelrc:
+                Добавляем в { "presets": [  ]}:
+                ->    "@babel/preset-typescript"
+    
+    Изменяем: в webpack.config.js:
+                Изменяем в: module.export 
+                    Изменяем в: module:{rules:[    ]}
+                    ->    { test: /\.(js|ts)$/, exclude: /node_modules/, loader: "babel-loader" }
+                    |Изменение в (js|ts) <- говорит, что, файлы с расширением js и ts будут проходить через 
+                    |babel-loader
+    
+    Добавляем: в webpack.config.js:
+        Добавляем в: module.export:
+            resolve: {extensions: ['.js', '.ts']},
+            | Говорит то, что при импорте файлов с расширениями в массиве extensions, 
+            |при импорте расширения можно не указывать
+
+# Изображения и файлы: ================================================================================
+    <------->npm install file-loader --save-dev
+    <------->npm i image-webpack-loader --save-dev | Оптимизация и минимизация изображений
+
+    Добавляем: в webpack.config.js:
+                    Добавляем в: module.export 
+                        Добавляем в: module:{rules:[    ]}
+                        ->    { test: /\.(png|jpg|gif)$/i, use: [ 
+                        ->    { loader: 'file-loader', options: { name: '[name].[ext]', outputPath: './img/',}
+                        ->    { loader: 'image-webpack-loader', options: {mozjpeg:{progressive:true, qualiry: 10}}}},],},
+                    
+
+
+=================================================================================================
+=== Вспомогательные скрипты и плагины при разработке проекта
+=================================================================================================
+
+=== DevServer  
+    <------->npm install webpack-dev-server --save-dev
+
+        Добавляем: в webpack.config.js:
+            Добавляем в: module.export:
+            ->    devServer: {contentBase: path.join(__dirname, 'dist'),port: 9000}
+
+        "scripts": "start": "webpack-dev-server --mode development --open"
+ 
+=== Собираем в режиме разработки:
+        "scripts": "dev": "webpack --mode development"
+
+=== Собираем в режиме готового продукта:
+        "scripts": "prod": "webpack --mode production"
+
+=== Собираем в режиме разработки в реальном времени:
+        "scripts": "dev-watch": "webpack --mode development --watch"
+
+
+=================================================================================================
+=== author: arm
+=================================================================================================
